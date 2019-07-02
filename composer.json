@@ -1,0 +1,26 @@
+{
+    "name": "codeblog/conveter-php-webp",
+    "description": "Easy WebP conversion library for PHP",
+    "keywords": [
+        "CodeBlog",
+        "php webp",
+        "webp", "images", "cwebp", "imagick", "gd", "jpg2webp", "png2webp", "jpg", "png", "image conversion"
+    ],
+    "homepage": "http://www.codeblog.com.br",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Whallysson Avelino",
+            "email": "whallyssonallain@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "CodeBlog\\ToWebP\\": "src/"
+        }
+    }
+}
