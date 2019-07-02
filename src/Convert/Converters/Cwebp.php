@@ -58,7 +58,7 @@ class Cwebp extends AbstractConverter
     public function setUpBinaries()
     {
         // Removes system paths if the corresponding binary doesn't exist
-        $binaries = array_filter($this->defaultPaths, function ($binary) {
+        $binaries = array_filter($this->defaultPaths, function($binary) {
             return file_exists($binary);
         });
 
