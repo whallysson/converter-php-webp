@@ -33,7 +33,7 @@
         $wp = new ToWebP('uploads', "images");
         $wp->convert($source, $destination, $quality);
 
-        $arr =[
+        $arr = [
             'picture' => [
                 'class' => 'responsive'
             ],
