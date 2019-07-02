@@ -80,7 +80,7 @@ class Imagick extends AbstractConverter
         // 2. $im->writeImage($destination)
         $wh = fopen($this->destination, 'wb');
 
-        $success = $wh !== false ? $im->writeImageFile() : false;
+        $success = $wh !== false ? $im->writeImageFile($wh) : false;
 
         // TODO: Check whether Imagick::writeImageFile returns false if conversion was unsuccessful
         if (!$success) {
