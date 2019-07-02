@@ -12,21 +12,24 @@ namespace CodeBlog\ToWebP\Convert\Converters;
  */
 
 use CodeBlog\ToWebP\AbstractConverter;
+use Exception;
+
+define('PHPWEBP_GD_PNG', false);
 
 class Gd extends AbstractConverter
 {
     /**
      * @return bool|mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function checkRequirements()
     {
         if (!extension_loaded('gd')) {
-            throw new \Exception('Required GD extension is not available.');
+            throw new Exception('Required GD extension is not available.');
         }
 
         if (!function_exists('imagewebp')) {
-            throw new \Exception('Required imagewebp() function is not available.');
+            throw new Exception('Required imagewebp() function is not available.');
         }
 
         return true;
@@ -46,7 +49,7 @@ class Gd extends AbstractConverter
                         return imagecreatefrompng($this->source);
                     } else {
                         // TODO: Troubleshooting section: define("PHPWEBP_GD_PNG", true);
-                        throw new \Exception('PNG file conversion failed.');
+                        throw new Exception('PNG file conversion failed.');
                     }
                     break;
                 default:
@@ -55,9 +58,9 @@ class Gd extends AbstractConverter
 
             // Checks if either imagecreatefromjpeg() or imagecreatefrompng() returned false
             if (!$image) {
-                throw new \Exception('Either imagecreatefromjpeg or imagecreatefrompng failed');
+                throw new Exception('Either imagecreatefromjpeg or imagecreatefrompng failed');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false; // TODO: `throw` custom \Exception $e & handle it smoothly on top-level.
         }
 

@@ -10,6 +10,7 @@ namespace CodeBlog\ToWebP\Convert\Converters;
  */
 
 use CodeBlog\ToWebP\AbstractConverter;
+use Exception;
 
 class Cwebp extends AbstractConverter
 {
@@ -40,12 +41,12 @@ class Cwebp extends AbstractConverter
 
     /**
      * @return bool|mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function checkRequirements()
     {
         if (!function_exists('exec')) {
-            throw new \Exception('exec() is not enabled.');
+            throw new Exception('exec() is not enabled.');
         }
 
         return true;
@@ -53,7 +54,7 @@ class Cwebp extends AbstractConverter
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function setUpBinaries()
     {
@@ -66,7 +67,7 @@ class Cwebp extends AbstractConverter
 
         // Throws an exception if binary file does not exist
         if (!file_exists($binaryFile)) {
-            throw new \Exception('Operating system is currently not supported: ' . PHP_OS);
+            throw new Exception('Operating system is currently not supported: ' . PHP_OS);
         }
 
         // File exists, now generate its hash
@@ -74,7 +75,7 @@ class Cwebp extends AbstractConverter
 
         // Throws an exception if binary file checksum & deposited checksum do not match
         if ($binaryHash != $this->binary[1]) {
-            throw new \Exception('Binary checksum is invalid.');
+            throw new Exception('Binary checksum is invalid.');
         }
 
         $binaries[] = $binaryFile;
@@ -116,7 +117,7 @@ class Cwebp extends AbstractConverter
 
             // Preparing array holding possible binaries
             $binaries = $this->setUpBinaries();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false; // TODO: `throw` custom \Exception $e & handle it smoothly on top-level.
         }
 
@@ -132,11 +133,7 @@ class Cwebp extends AbstractConverter
         );
 
         // Built-in method option
-        $method = (
-        defined('PHPWEBP_CWEBP_METHOD')
-            ? '-m ' . PHPWEBP_CWEBP_METHOD
-            : '-m 6'
-        );
+        $method = '-m 6';
 
         // Metadata (all, exif, icc, xmp or none (default))
         // Comma-separated list of existing metadata to copy from input to output
@@ -147,22 +144,14 @@ class Cwebp extends AbstractConverter
         );
 
         // Built-in low memory option
-        if (!defined('PHPWEBP_CWEBP_LOW_MEMORY')) {
-            $lowMemory = '-low_memory';
-        } else {
-            $lowMemory = (
-            PHPWEBP_CWEBP_LOW_MEMORY
-                ? '-low_memory'
-                : ''
-            );
-        }
+        $lowMemory = '-low_memory';
 
         $optionsArray = [
-            $lossless = $lossless,
+            $lossless,
             $quality = '-q ' . $this->quality,
-            $method = $method,
-            $metadata = $metadata,
-            $lowMemory = $lowMemory,
+            $method,
+            $metadata,
+            $lowMemory,
             $input = $this->escapeFilename($this->source),
             $output = '-o ' . $this->escapeFilename($this->destination),
             $stderrRedirect = '2>&1',

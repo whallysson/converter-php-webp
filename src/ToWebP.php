@@ -13,6 +13,7 @@ namespace CodeBlog\ToWebP;
  */
 
 use CodeBlog\ToWebP\Convert\Make;
+use Exception;
 
 class ToWebP extends Make
 {
@@ -38,7 +39,7 @@ class ToWebP extends Make
      * @param string $uploadDir
      * @param string $fileTypeDir
      * @param null $converters
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(string $uploadDir, string $fileTypeDir, $converters = null)
     {
@@ -67,6 +68,8 @@ class ToWebP extends Make
             $this->isValidTarget($source);
             $this->isAllowedExtension($source);
 
+            $success = false;
+
             // set local and name
             $this->name($name);
 
@@ -83,13 +86,10 @@ class ToWebP extends Make
 
                     $converter = new $className(
                         $source,
-                        //$name,
                         "{$this->path}/{$this->name}",
                         $quality,
                         $stripMetadata
                     );
-
-                    //var_dump($converter);
 
                     if (!$converter instanceof AbstractConverter || !is_callable([$converter, 'convert'])) {
                         continue;
@@ -108,9 +108,9 @@ class ToWebP extends Make
 
             $this->image_webp = "{$this->path}/{$this->name}";
 
-            return $this;
+            return $success;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
     }
@@ -151,12 +151,12 @@ class ToWebP extends Make
      *
      * @param $filePath
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     private function isValidTarget($filePath)
     {
         if (!file_exists($filePath)) {
-            throw new \Exception('File or directory not found: ' . $filePath);
+            throw new Exception('File or directory not found: ' . $filePath);
         }
 
         return true;
@@ -166,13 +166,13 @@ class ToWebP extends Make
     /**
      * @param $filePath
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     private function isAllowedExtension($filePath)
     {
         $fileExtension = pathinfo($filePath, PATHINFO_EXTENSION);
         if (!in_array(strtolower($fileExtension), $this->allowedExtensions)) {
-            throw new \Exception('Unsupported file extension: ' . $fileExtension);
+            throw new Exception('Unsupported file extension: ' . $fileExtension);
         }
 
         return true;
