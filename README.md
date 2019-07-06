@@ -1,7 +1,7 @@
 # ToWebP @Codeblog 
 
 [![Maintainer](http://img.shields.io/badge/maintainer-@whallysson-blue.svg?style=flat-square)](https://twitter.com/whallysson)
-[![Source Code](http://img.shields.io/badge/source-codeblog/conveter-php-webp-blue.svg?style=flat-square)](https://github.com/whallysson/conveter-php-webp)
+[![Source Code](http://img.shields.io/badge/source-codeblog/conveterphpwebp-blue.svg?style=flat-square)](https://github.com/whallysson/conveter-php-webp)
 [![PHP from Packagist](https://img.shields.io/packagist/php-v/codeblog/conveter-php-webp.svg?style=flat-square)](https://packagist.org/packages/codeblog/conveter-php-webp)
 [![Latest Version](https://img.shields.io/github/release/whallysson/conveter-php-webp.svg?style=flat-square)](https://github.com/whallysson/conveter-php-webp/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)

@@ -38,10 +38,10 @@ class ToWebP extends Make
      * ToWebP constructor.
      * @param string $uploadDir
      * @param string $fileTypeDir
-     * @param null $converters
+     * @param array|string $converters
      * @throws Exception
      */
-    public function __construct(string $uploadDir, string $fileTypeDir, $converters = null)
+    public function __construct(string $uploadDir, string $fileTypeDir, $converters = [])
     {
         parent::__construct($uploadDir, $fileTypeDir);
 

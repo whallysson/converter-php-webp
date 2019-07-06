@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.1",
+        "ext-gd": "*"
     },
     "autoload": {
         "psr-4": {
