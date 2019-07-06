@@ -2,16 +2,15 @@
 
 namespace CodeBlog\ToWebP\Convert\Converters;
 
+use CodeBlog\ToWebP\AbstractConverter;
+use Exception;
+
 /**
  * Class Cwebp
  *
  * @author Whallysson Avelino <https://github.com/whallysson>
  * @package CodeBlog\ToWebP\Convert\Converters
  */
-
-use CodeBlog\ToWebP\AbstractConverter;
-use Exception;
-
 class Cwebp extends AbstractConverter
 {
     /**
@@ -114,57 +113,35 @@ class Cwebp extends AbstractConverter
     {
         try {
             $this->checkRequirements();
-
             // Preparing array holding possible binaries
             $binaries = $this->setUpBinaries();
         } catch (Exception $e) {
-            return false; // TODO: `throw` custom \Exception $e & handle it smoothly on top-level.
+            return false;
         }
 
-        /*
-         * Preparing options
-         */
-
         // lossless PNG conversion
-        $lossless = (
-        $this->extension == 'png'
-            ? '-lossless'
-            : ''
-        );
-
-        // Built-in method option
-        $method = '-m 6';
+        $lossless = ( $this->extension == 'png' ? '-lossless' : '' );
 
         // Metadata (all, exif, icc, xmp or none (default))
-        // Comma-separated list of existing metadata to copy from input to output
-        $metadata = (
-        $this->strip
-            ? '-metadata none'
-            : '-metadata all'
-        );
+        $metadata = ( $this->strip ? '-metadata none' : '-metadata all' );
 
-        // Built-in low memory option
-        $lowMemory = '-low_memory';
-
-        $optionsArray = [
-            $lossless,
-            $quality = '-q ' . $this->quality,
-            $method,
-            $metadata,
-            $lowMemory,
-            $input = $this->escapeFilename($this->source),
-            $output = '-o ' . $this->escapeFilename($this->destination),
-            $stderrRedirect = '2>&1',
+        $optionsArray = [ $lossless, '-q ' . $this->quality, '-m 6', $metadata, '-low_memory',
+            $this->escapeFilename($this->source), '-o ' . $this->escapeFilename($this->destination), '2>&1',
         ];
 
         $options = implode(' ', array_filter($optionsArray));
+        $nice = ( $this->hasNiceSupport() ? 'nice' : '' );
+        return $this->toConvert($binaries, $nice, $options);
+    }
 
-        $nice = (
-        $this->hasNiceSupport()
-            ? 'nice'
-            : ''
-        );
-
+    /**
+     * @param array $binaries
+     * @param string $nice
+     * @param string $options
+     * @return bool
+     */
+    private function toConvert(array $binaries, string $nice, string $options)
+    {
         $success = false;
 
         // Try all paths
@@ -174,9 +151,7 @@ class Cwebp extends AbstractConverter
 
             if ($returnCode == 0) { // Everything okay!
                 // cwebp sets file permissions to 664 but instead ..
-                // .. $destination's parent folder's permissions should be used (except executable bits)
-                $destinationParent = dirname($this->destination);
-                $fileStatistics = stat($destinationParent);
+                $fileStatistics = stat(dirname($this->destination));
 
                 // Apply same permissions as parent folder but strip off the executable bits
                 $permissions = $fileStatistics['mode'] & 0000666;
@@ -186,7 +161,6 @@ class Cwebp extends AbstractConverter
                 break;
             }
         }
-
         return $success;
     }
 }

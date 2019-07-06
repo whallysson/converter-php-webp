@@ -2,6 +2,12 @@
 
 namespace CodeBlog\ToWebP\Convert\Converters;
 
+use CodeBlog\ToWebP\AbstractConverter;
+use Exception;
+
+/** @param bool */
+define('PHPWEBP_GD_PNG', false);
+
 /**
  * Class Gd
  *
@@ -10,12 +16,6 @@ namespace CodeBlog\ToWebP\Convert\Converters;
  * @author Whallysson Avelino <https://github.com/whallysson>
  * @package CodeBlog\ToWebP\Convert\Converters
  */
-
-use CodeBlog\ToWebP\AbstractConverter;
-use Exception;
-
-define('PHPWEBP_GD_PNG', false);
-
 class Gd extends AbstractConverter
 {
     /**
@@ -42,28 +42,33 @@ class Gd extends AbstractConverter
     {
         try {
             $this->checkRequirements();
-
             switch ($this->extension) {
                 case 'png':
                     if (defined('PHPWEBP_GD_PNG') && PHPWEBP_GD_PNG) {
                         return imagecreatefrompng($this->source);
                     } else {
-                        // TODO: Troubleshooting section: define("PHPWEBP_GD_PNG", true);
                         throw new Exception('PNG file conversion failed.');
                     }
                     break;
                 default:
                     $image = imagecreatefromjpeg($this->source);
             }
-
             // Checks if either imagecreatefromjpeg() or imagecreatefrompng() returned false
-            if (!$image) {
+            if ($image === false) {
                 throw new Exception('Either imagecreatefromjpeg or imagecreatefrompng failed');
             }
         } catch (Exception $e) {
             return false; // TODO: `throw` custom \Exception $e & handle it smoothly on top-level.
         }
+        return $this->toImage($image);
+    }
 
+    /**
+     * @param $image
+     * @return bool
+     */
+    private function toImage($image)
+    {
         $success = imagewebp($image, $this->destination, $this->quality);
 
         /*

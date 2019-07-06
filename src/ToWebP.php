@@ -1,7 +1,9 @@
 <?php
 
-
 namespace CodeBlog\ToWebP;
+
+use CodeBlog\ToWebP\Convert\Make;
+use Exception;
 
 /**
  * Class ToWebP
@@ -11,10 +13,6 @@ namespace CodeBlog\ToWebP;
  * @author Whallysson Avelino <https://github.com/whallysson>
  * @package CodeBlog\ToWebP
  */
-
-use CodeBlog\ToWebP\Convert\Make;
-use Exception;
-
 class ToWebP extends Make
 {
 
@@ -54,7 +52,7 @@ class ToWebP extends Make
      * Converts image to WebP
      *
      * @param string $source Path of input image
-     * @param string $destination Path of output image
+     * @param string $name Path of output image
      * @param integer $quality Image compression quality (ranging from 0 to 100)
      * @param boolean $stripMetadata Whether to strip metadata
      *
@@ -74,42 +72,11 @@ class ToWebP extends Make
             $this->name($name);
 
             if (!file_exists("{$this->path}/{$this->name}")) {
-
-                // .. and iterates over them
-                foreach ($this->setUpConverters() as $currentConverter) {
-                    $converterName = ucfirst(strtolower($currentConverter));
-                    $className = 'CodeBlog\\ToWebP\\Convert\\Converters\\' . $converterName;
-
-                    if (!class_exists($className)) {
-                        continue;
-                    }
-
-                    $converter = new $className(
-                        $source,
-                        "{$this->path}/{$this->name}",
-                        $quality,
-                        $stripMetadata
-                    );
-
-                    if (!$converter instanceof AbstractConverter || !is_callable([$converter, 'convert'])) {
-                        continue;
-                    }
-
-                    $conversion = call_user_func([$converter, 'convert']);
-
-                    if ($conversion) {
-                        $success = true;
-                        $this->setConverters($currentConverter);
-
-                        break;
-                    }
-                }
+                $success = $this->toConvert($source, "{$this->path}/{$this->name}", $quality, $stripMetadata);
             }
 
             $this->image_webp = "{$this->path}/{$this->name}";
-
             return $success;
-
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
@@ -145,6 +112,35 @@ class ToWebP extends Make
                 </picture>";
     }
 
+    /**
+     * @param string $source
+     * @param string $filename
+     * @param int $quality
+     * @param bool $stripMetadata
+     * @return bool
+     */
+    private function toConvert(string $source, string $filename, int $quality, bool $stripMetadata)
+    {
+        $success = false;
+        foreach ($this->setUpConverters() as $currentConverter) {
+            $className = 'CodeBlog\\ToWebP\\Convert\\Converters\\' . ucfirst(strtolower($currentConverter));
+
+            if (!class_exists($className)) { continue; }
+
+            $converter = new $className( $source, $filename, $quality, $stripMetadata );
+
+            if (!$converter instanceof AbstractConverter || !is_callable([$converter, 'convert'])) { continue; }
+
+            $conversion = call_user_func([$converter, 'convert']);
+
+            if ($conversion) {
+                $success = true;
+                $this->setConverters($currentConverter);
+                break;
+            }
+        }
+        return $success;
+    }
 
     /**
      * Checks whether provided file exists
