@@ -62,20 +62,24 @@ class ToWebP extends Make
     {
         try {
             $this->image_original = $source;
+            $this->image_webp = null;
 
-            $this->isValidTarget($source);
-            $this->isAllowedExtension($source);
+            if(isBrowserSupportsWebp()) {
+                $this->isValidTarget($source);
+                $this->isAllowedExtension($source);
 
-            $success = false;
+                $success = false;
 
-            // set local and name
-            $this->name($name);
+                // set local and name
+                $this->name($name);
 
-            if (!file_exists("{$this->path}/{$this->name}")) {
-                $success = $this->toConvert($source, "{$this->path}/{$this->name}", $quality, $stripMetadata);
+                if (!file_exists("{$this->path}/{$this->name}")) {
+                    $success = $this->toConvert($source, "{$this->path}/{$this->name}", $quality, $stripMetadata);
+                }
+
+                $this->image_webp = "{$this->path}/{$this->name}";
             }
 
-            $this->image_webp = "{$this->path}/{$this->name}";
             return $success;
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
@@ -172,6 +176,18 @@ class ToWebP extends Make
         }
 
         return true;
+    }
+    
+    /**
+     * Checks whether the browser supports WEBP
+     *
+     * @return bool
+     */
+    private function isBrowserSupportsWebp()
+    {
+        $accept = filter_input(INPUT_SERVER, "HTTP_ACCEPT");
+        $agent = filter_input(INPUT_SERVER, "HTTP_USER_AGENT");
+        return (!empty($accept) && strpos($accept,'image/webp') !== false || strpos($agent, ' Chrome/') !== false);
     }
 
     /**
