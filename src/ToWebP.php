@@ -64,7 +64,7 @@ class ToWebP extends Make
             $this->image_original = $source;
             $this->image_webp = null;
 
-            if(isBrowserSupportsWebp()) {
+            if($this->isBrowserSupportsWebp()) {
                 $this->isValidTarget($source);
                 $this->isAllowedExtension($source);
 
