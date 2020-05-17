@@ -63,12 +63,11 @@ class ToWebP extends Make
         try {
             $this->image_original = $source;
             $this->image_webp = null;
+            $success = false;
 
             if($this->isBrowserSupportsWebp()) {
                 $this->isValidTarget($source);
                 $this->isAllowedExtension($source);
-
-                $success = false;
 
                 // set local and name
                 $this->name($name);
